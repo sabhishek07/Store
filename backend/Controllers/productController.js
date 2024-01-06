@@ -153,7 +153,7 @@ export const productPhotoController = async (req, res) => {
 
   //update products
 
-  export const UpdateProdcutController=async(req,res)=>{
+  export const UpdateProductController=async(req,res)=>{
 
     try {
         const{id}=req.params;

@@ -3,13 +3,13 @@ import Layout from '../../components/reusablecomponents/Layout'
 const { Option } = Select;
 import { Select } from "antd";
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import AdminMenu from '../../components/reusablecomponents/AdminMenu';
 import axios from 'axios';
 
-const CreateProduct = () => {
+const UpdateProduct = () => {
 
-    const navigate=useNavigate();
+   const navigate=useNavigate();
     const[name,setName]=useState("")
     const[description,setDescription]=useState("")
     const[image,setImage]=useState([])
@@ -18,8 +18,46 @@ const CreateProduct = () => {
     const [quantity, setQuantity] = useState("");
     const [category, setCategory] = useState("")
     const[productCategory,setproductCategory]=useState([])
+    const[id,setId]=useState('')
+    const params=useParams();
 
-    const GetallCategory=async()=>{
+
+    
+    const GetSingleProduct=async()=>{
+   
+        try {
+            console.log(params.id)
+        const {data}=await axios.get(`/api/v1/product/get-single-product/${params.id}`)
+            if(data){             
+                setDescription(data.singlproduct.description)
+                setName(data.singlproduct.name)  
+                setPrice(data.GetSingleProduct.price) 
+                setQuantity(data.GetSingleProduct.quantity) 
+                setShipping(data.GetSingleProduct.shipping)
+                setCategory(data.GetSingleProduct.category._id) 
+                setId(data.GetSingleProduct._id)                  
+            }
+            else{
+               toast.error("")
+            }
+            
+        } catch (error) {
+    
+           
+            toast.error(error)
+                }
+    }
+
+      //eslint-disable-next-line
+
+    useEffect(()=>{
+        
+        GetSingleProduct();
+       
+     },[params.id]) 
+
+     //get all category
+     const GetallCategory=async()=>{
         try {
         const {data}=await axios.get('/api/v1/category/get-all-category')
             if(data){             
@@ -41,31 +79,26 @@ const CreateProduct = () => {
      },[]) 
 
 
-     //handle product
-
-     const handleCreate=async(e)=>{
+     const updatehandle=async(e)=>{
         e.preventDefault();
 
+
         try {
+
             const productData = new FormData();
             productData.append("name", name);
             productData.append("description", description);
             productData.append("price", price);
             productData.append("quantity", quantity);
             productData.append("image", image);
-            productData.append("category", category);
+            productData.append("category", category._id);
 
-            const {productdata1}=await axios.post('/api/v1/product/create-product',productData)
-            if(productdata1.success){
-            
-               
-                toast.success("all okay")
-            }
-          
+            const {updatedata}=await axios.put(`/api/v1/product/get-update-product/${params.id}`,productData)
             
         } catch (error) {
+            toast.error("Something Went Wrong")
+
             console.log(error)
-            toast.error("Error While Adding Product")
             
         }
 
@@ -77,14 +110,14 @@ const CreateProduct = () => {
 
   return (
    <Layout>
-   
-    <div className="container-fluid m-3 p-3">
+
+<div className="container-fluid m-3 p-3">
         <div className="row">
           <div className="col-md-3">
             <AdminMenu />
           </div>
           <div className="col-md-9">
-            <h1>List Your Items In Store</h1>
+            <h1>Wanna Change? </h1>
             <div className="m-1 w-75">
               <Select
                 bordered={false}
@@ -182,8 +215,8 @@ const CreateProduct = () => {
                 </Select>
               </div>
               <div className="mb-3">
-                <button className="btn btn-primary" onClick={handleCreate}>
-                 Add product
+                <button className="btn btn-primary "onClick={updatehandle} >
+                Update Item
                 </button>
               </div>
             </div>
@@ -191,8 +224,9 @@ const CreateProduct = () => {
         </div>
       </div>
      
+
    </Layout>
   )
 }
 
-export default CreateProduct
+export default UpdateProduct

@@ -11,6 +11,8 @@ import AdminRoute from './Routes/AdminRoute'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import CreateCategory from './pages/Admin/CreateCategory'
 import CreateProduct from './pages/Admin/CreateProduct'
+import AdminProductPage from './pages/Admin/AdminProductPage'
+import UpdateProduct from './pages/Admin/UpdateProduct'
 
 
 
@@ -33,6 +35,8 @@ function App() {
         <Route path='admin'element={<AdminDashboard/>}/>
         <Route path='admin/create-category'element={<CreateCategory/>}/>
         <Route path='admin/create-product'element={<CreateProduct/>}/>
+        <Route path='admin/get-products'element={<AdminProductPage/>}/>
+        <Route path='admin/product/:id'element={<UpdateProduct/>}/>
       </Route>
      
       <Route path='/contact'element={<Contact/>}/>
