@@ -157,8 +157,8 @@ export const productPhotoController = async (req, res) => {
 
     try {
         const{id}=req.params;
-        const { name, description, price, category, quantity, shipping } =req.fields;
-        const { image } = req.files;
+       const{name,description,price,quantity,shipping,category}=req.fields;
+        const{image} = req.files;
 
         if(!name|| !description || !price || !category || !quantity || !shipping){
             return res.status(400).send({
@@ -179,9 +179,16 @@ export const productPhotoController = async (req, res) => {
         if (image) {
             updateProduct.image.data = fs.readFileSync(image.path);
             updateProduct.image.contentType = image.type;
+            
           }
 
           updateProduct.save();
+
+          res.status(201).send({
+            success:true,
+            message:"Product Updated",
+            updateProduct
+          })
     } catch (error) {
         console.log(error)
 
@@ -194,4 +201,41 @@ export const productPhotoController = async (req, res) => {
 
   }
   
+  export const ProductFilterController=async(req,res)=>{
+
+    try {
+      const{checked,radio}=req.body;
+      let filterproducts={};  
+
+      if(checked.length>0){
+        filterproducts.category=checked;
+
+      }
+      if(radio){
+        filterproducts.price={
+          $gte:radio[0],$lte:radio[1]
+        }
+
+      }
+
+      const AllfilterProducts=await ProductModel.find(filterproducts)
+      res.status(201).send({
+        success:true,
+        message:"Allfilter Products",
+        AllfilterProducts
+      })
+
+  
+
+      
+    } catch (error) {
+      console.log(error)
+      res.status(500).send({
+        success:false,
+        message:"Something Went Wrong"
+      })
+      
+    }
+
+  }
 

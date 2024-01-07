@@ -26,7 +26,7 @@ const UpdateProduct = () => {
     const GetSingleProduct=async()=>{
    
         try {
-            console.log(params.id)
+            
         const {data}=await axios.get(`/api/v1/product/get-single-product/${params.id}`)
             if(data){             
                 setDescription(data.singlproduct.description)
@@ -91,9 +91,15 @@ const UpdateProduct = () => {
             productData.append("price", price);
             productData.append("quantity", quantity);
             productData.append("image", image);
-            productData.append("category", category._id);
+            productData.append("category", category);
 
             const {updatedata}=await axios.put(`/api/v1/product/get-update-product/${params.id}`,productData)
+            if(updatedata){
+                toast.success("updated")
+            }
+            else{
+                toast.error("error")
+            }
             
         } catch (error) {
             toast.error("Something Went Wrong")
@@ -103,6 +109,29 @@ const UpdateProduct = () => {
         }
 
      }
+
+     //delete
+     //delete a product
+  const handleDelete = async () => {
+    try {
+        let answer = window.prompt("Are you sure you want to delete this product? Enter 'yes' to confirm:");
+      if (answer!=null && answer.toLowerCase()==='yes') {
+        const { data } = await axios.delete(
+            `/api/v1/product/delete-product/${params.id}`
+          );
+          toast.success("Product DEleted Succfully");
+          navigate("/dashboard/admin/get-products");
+
+      }
+      else{
+        toast.error("Not Deleted")
+      }
+    
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
 
 
 
@@ -219,10 +248,16 @@ const UpdateProduct = () => {
                 Update Item
                 </button>
               </div>
+              <div className="mb-3">
+                <button className="btn btn-danger" onClick={handleDelete}>
+                  DELETE PRODUCT
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+          
      
 
    </Layout>
