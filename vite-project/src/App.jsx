@@ -13,6 +13,7 @@ import CreateCategory from './pages/Admin/CreateCategory'
 import CreateProduct from './pages/Admin/CreateProduct'
 import AdminProductPage from './pages/Admin/AdminProductPage'
 import UpdateProduct from './pages/Admin/UpdateProduct'
+import CartPage from './pages/CartPage'
 
 
 
@@ -24,12 +25,12 @@ function App() {
     <>
     <Routes>
       <Route path='/'element={<Home/>}/>
+      <Route path='/cart'element={<CartPage/>}/>
 
       //nested routing
       <Route path="dashboard"element={<Private/>}>
       <Route path='user'element={<Dashboard/>}/>
       </Route>
-
       //nested routing
       <Route path='/dashboard'elment={<AdminRoute/>}>
         <Route path='admin'element={<AdminDashboard/>}/>

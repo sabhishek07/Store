@@ -3,10 +3,12 @@ import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/auth'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useCart } from '../../context/Cart';
 
 const Header = () => {
 
   const[auth, setAuth]=useAuth();
+  const[cart,setCart]=useCart();
 
   //logout functionality
   const handlelogout=()=>{
@@ -103,7 +105,7 @@ const Header = () => {
             
               <li className="nav-item">
                 <NavLink to="/cart" className="nav-link">
-                  Cart (0)
+                  Cart {cart?.length}
                 </NavLink>
               </li>
             </ul>
