@@ -50,8 +50,8 @@ const CartPage = () => {
                     src={`/api/v1/product/get-photo/${item._id}`}
                     className="card-img-top"
                     alt={item.name}
-                    width="100px"
-                    height={"100px"}
+                    width="20%"
+                    height={"80%"}
                   />
                 </div>
                 <div className="col-md-8">
@@ -60,8 +60,8 @@ const CartPage = () => {
                   <p>Price : {item.price}</p>
                   <button
                     className="btn btn-danger"
-                   
-                  >
+                    
+                    >
                     Remove
                   </button>
                 </div>
@@ -108,7 +108,6 @@ const CartPage = () => {
           </div>
         </div>
       </div>
-
 
         </Layout>
     )

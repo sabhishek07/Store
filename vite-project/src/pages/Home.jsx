@@ -14,7 +14,9 @@ const Home = () => {
     const[Categories,setCategories]=useState([])
      const [checked, setChecked] = useState([]);
      const[radio,setRadio]=useState([])
+     const [total, setTotal] = useState(0);
      const[cart,setCart]=useCart();
+     const [page, setPage] = useState(1);
 
 
     const GetAllCategory=async()=>{
@@ -112,24 +114,21 @@ const Home = () => {
   return (
     <Layout>
 
-      <div className='container-fluid row mt-3'>
-        <div className='col-md-2'>
-        <h4 className="text-center">Filter By Category</h4>
-        <div className='d-flex flex-cloumn'>
-        {Categories?.map((c) => (
+<div className="container-fluid row mt-3">
+        <div className="col-md-2">
+          <h4 className="text-center">Filter By Category</h4>
+          <div className="d-flex flex-column">
+            {Categories?.map((c) => (
               <Checkbox
                 key={c._id}
-               onChange={(e)=>HandleCategory(e.target.checked,c._id)}
-              
-          
+                onChange={(e) => HandleCategory(e.target.checked, c._id)}
               >
                 {c.name}
               </Checkbox>
             ))}
-
-
-        </div>
-        <h4 className="text-center mt-4">Filter By Price</h4>
+          </div>
+          {/* price filter */}
+          <h4 className="text-center mt-4">Filter By Price</h4>
           <div className="d-flex flex-column">
             <Radio.Group onChange={(e) => setRadio(e.target.value)}>
               {ProductPrices?.map((p) => (
@@ -141,51 +140,67 @@ const Home = () => {
           </div>
           <div className="d-flex flex-column">
             <button
-              className="btn btn-success"
+              className="btn btn-danger"
               onClick={() => window.location.reload()}
             >
-              Remove Filters
+              RESET FILTERS
             </button>
           </div>
-
-
         </div>
-
-
-
-
-
-      </div>
-      
-    
-            <div className="col-md-9">
+        <div className="col-md-9 offset-1">
           <h1 className="text-center">Items In Store</h1>
           <div className="d-flex flex-wrap">
-            {products?.map((items) => (
-              <div className="card m-2" style={{ width: "18rem" }}>
+            {products?.map((p) => (
+              <div className="card m-2" style={{ width: "18rem" }} key={p._id}>
                 <img
-                  src={`/api/v1/product/get-photo/${items._id}`}
+                  src={`/api/v1/product/get-photo/${p._id}`}
                   className="card-img-top"
-                  alt={items.name}
+                  alt={p.name}
                 />
                 <div className="card-body">
-                  <h5 className="card-title">{items.name}</h5>
+                  <h5 className="card-title">{p.name}</h5>
                   <p className="card-text">
-                    {items.description.substring(0, 30)}...
+                    {p.description.substring(0, 30)}...
                   </p>
-                  <p className="card-text"> ₹{items.price}</p>
-                  <button class="btn btn-primary ms-1">More Details</button>
-                  <button class="btn btn-secondary ms-1" onClick={()=>{setCart([...cart,items])
-                  toast.success("Item added To Your Cart")
-                  localStorage.setItem('cart',cart)
-                  
-                  }}>
-                    ADD TO CART</button>
+                  <p className="card-text"> $ {p.price}</p>
+                  <button
+                    className="btn btn-primary ms-1"
+                    onClick={() => navigate(`/product/${p._id}`)}
+                  >
+                    More Details
+                  </button>
+                  <button
+                    className="btn btn-secondary ms-1"
+                    onClick={() => {
+                      setCart([...cart, p]);
+                      localStorage.setItem(
+                        "cart",
+                        JSON.stringify([...cart, p])
+                      );
+                      toast.success("Item Added to cart");
+                    }}
+                  >
+                    ADD TO CART
+                  </button>
                 </div>
               </div>
             ))}
           </div>
+          <div className="m-2 p-3">
+            {products && products.length < total && (
+              <button
+                className="btn btn-warning"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(page + 1);
+                }}
+              >
+                {loading ? "Loading ..." : "Loadmore"}
+              </button>
+            )}
           </div>
+        </div>
+      </div>
        
 
     </Layout>

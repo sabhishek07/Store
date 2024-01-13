@@ -56,7 +56,7 @@ const CreateProduct = () => {
             productData.append("category", category);
 
             const {productdata1}=await axios.post('/api/v1/product/create-product',productData)
-            if(productdata1.success){
+            if(productdata1){
             
                
                 toast.success("all okay")

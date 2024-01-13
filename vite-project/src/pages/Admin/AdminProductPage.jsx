@@ -33,28 +33,28 @@ const AdminProductPage = () => {
     },[])
   return (
     <Layout>
-         <div className="row">
+          <div className="row">
         <div className="col-md-3">
           <AdminMenu />
         </div>
         <div className="col-md-9 ">
           <h1 className="text-center">Items In Store</h1>
-          <div className="d-flex">
-            {product?.map((item) => (
+          <div className="d-flex flex-wrap">
+            {product?.map((items) => (
               <Link
-                key={item._id}
-                to={`/dashboard/admin/product/${item._id}`}
+                key={items._id}
+                to={`/dashboard/admin/product/${items._id}`}
                 className="product-link"
               >
                 <div className="card m-2" style={{ width: "18rem" }}>
                   <img
-                    src={`/api/v1/product/get-photo/${item._id}`}
+                    src={`/api/v1/product/get-photo/${items._id}`}
                     className="card-img-top"
-                    alt={Image.name}
+                    alt={items.name}
                   />
                   <div className="card-body">
-                    <h5 className="card-title">{item.name}</h5>
-                    <p className="card-text">{item.description}</p>
+                    <h5 className="card-title">{items.name}</h5>
+                    <p className="card-text">{items.description}</p>
                   </div>
                 </div>
               </Link>
@@ -62,8 +62,6 @@ const AdminProductPage = () => {
           </div>
         </div>
       </div>
-
-
 
     </Layout>
 
