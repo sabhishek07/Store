@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Layout from '../components/reusablecomponents/Layout'
 import {
     MDBBtn,
@@ -22,6 +22,7 @@ const CartPage = () => {
     const[auth,setAuth]=useAuth();
     const navigate=useNavigate();
 
+ 
 
 
     return(
@@ -44,6 +45,7 @@ const CartPage = () => {
         <div className="row">
           <div className="col-md-8">
             {cart?.map((item) => (
+                
               <div className="row mb-2 p-3 card flex-row">
                 <div className="col-md-4">
                   <img
@@ -59,12 +61,15 @@ const CartPage = () => {
                   <p>{item.description.substring(0, 30)}</p>
                   <p>Price : {item.price}</p>
                   <button
-                    className="btn btn-danger"
-                    
+                    className="btn btn-success" onClick={()=>{setCart([...cart,item])}}                
                     >
-                    Remove
+                   Add Quantity
                   </button>
+                
+                
                 </div>
+               
+                
               </div>
             ))}
           </div>

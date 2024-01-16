@@ -9,6 +9,16 @@ const CartProvider=({children})=>{
 
 
 
+    useEffect(()=>{
+       let cartpresent=localStorage.getItem('cart')
+       if(cartpresent){
+        setCart(JSON.parse(cartpresent))
+       }
+
+    },[])
+
+
+
     return(
         <CartContext.Provider value={[cart, setCart]}>
       {children}

@@ -2,7 +2,6 @@ import express from 'express';
 import { User } from '../models/usersModel.js';
 import { comparePassword, hashingfunction } from '../helper/userhelper.js';
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 
 export const RegisterController=async(req,res)=>{

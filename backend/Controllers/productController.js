@@ -207,8 +207,8 @@ export const productPhotoController = async (req, res) => {
       const{checked,radio}=req.body;
       let filterproducts={};  
 
-      if(checked.length>0){
-        filterproducts.category=checked;
+      if(checked && checked.length>0){
+        filterproducts.category={ $in: checked };
 
       }
       if(radio){

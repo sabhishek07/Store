@@ -15,8 +15,10 @@ const Home = () => {
      const [checked, setChecked] = useState([]);
      const[radio,setRadio]=useState([])
      const [total, setTotal] = useState(0);
-     const[cart,setCart]=useCart();
+     const[cart,setCart]=useCart([]);
      const [page, setPage] = useState(1);
+   
+     
 
 
     const GetAllCategory=async()=>{
@@ -116,7 +118,7 @@ const Home = () => {
 
 <div className="container-fluid row mt-3">
         <div className="col-md-2">
-          <h4 className="text-center">Filter By Category</h4>
+          <h6 className="text-center">Use This Filter With Price Filter</h6>
           <div className="d-flex flex-column">
             {Categories?.map((c) => (
               <Checkbox
@@ -140,7 +142,7 @@ const Home = () => {
           </div>
           <div className="d-flex flex-column">
             <button
-              className="btn btn-danger"
+              className="btn btn-success"
               onClick={() => window.location.reload()}
             >
               RESET FILTERS
@@ -173,12 +175,15 @@ const Home = () => {
                     className="btn btn-secondary ms-1"
                     onClick={() => {
                       setCart([...cart, p]);
+                     
                       localStorage.setItem(
                         "cart",
                         JSON.stringify([...cart, p])
                       );
                       toast.success("Item Added to cart");
+                     
                     }}
+                   
                   >
                     ADD TO CART
                   </button>
