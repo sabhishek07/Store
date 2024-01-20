@@ -1,6 +1,19 @@
 import express from 'express';
 import fs from 'fs';
 import { ProductModel } from '../models/productmodel.js';
+import dotenv from 'dotenv'
+
+import  braintree from "braintree";
+import { Ordermodel } from '../models/ordermodel.js';
+
+dotenv.config();
+
+var gateway = new braintree.BraintreeGateway({
+  environment: braintree.Environment.Sandbox,
+  merchantId: process.env.Merchant_ID,
+  publicKey: process.env.Public_Key,
+  privateKey: process.env.Private_Key,
+});
 
 
 
@@ -157,7 +170,7 @@ export const productPhotoController = async (req, res) => {
 
     try {
         const{id}=req.params;
-       const{name,description,price,quantity,shipping,category}=req.fields;
+       const{category,name,description,price,quantity,shipping}=req.fields;
         const{image} = req.files;
 
         if(!name|| !description || !price || !category || !quantity || !shipping){
@@ -238,4 +251,56 @@ export const productPhotoController = async (req, res) => {
     }
 
   }
+
+  
+//payment gateway api
+//token
+export const braintreeTokenController = async (req, res) => {
+  try {
+    gateway.clientToken.generate({}, function (err, response) {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.send(response);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+//payment
+export const brainTreePaymentController = async (req, res) => {
+  try {
+    const { nonce, cart } = req.body;
+    let total = 0;
+    cart.map((i) => {
+      total += i.price;
+    });
+    let newTransaction = gateway.transaction.sale(
+      {
+        amount: total,
+        paymentMethodNonce: nonce,
+        options: {
+          submitForSettlement: true,
+        },
+      },
+      function (error, result) {
+        if (result) {
+          const order = new Ordermodel({
+            products: cart,
+            payment: result,
+            buyer: req.user._id,
+          }).save();
+          res.json({ ok: true });
+        } else {
+          res.status(500).send(error);
+        }
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
 

@@ -110,6 +110,18 @@ const Home = () => {
       
     },[checked,radio])
 
+    const removecart=(pid)=>{
+     let itemcart=[...cart];
+     let index = itemcart.findIndex((item) => item._id === pid);
+     itemcart.splice(index, 1);
+     setCart(itemcart)
+     localStorage.setItem('cart',JSON.stringify(itemcart))
+
+
+
+
+    }
+
 
     
 
@@ -165,14 +177,15 @@ const Home = () => {
                     {p.description.substring(0, 30)}...
                   </p>
                   <p className="card-text"> $ {p.price}</p>
-                  <button
+                  {/* <button
                     className="btn btn-primary ms-1"
                     onClick={() => navigate(`/product/${p._id}`)}
                   >
                     More Details
-                  </button>
-                  <button
-                    className="btn btn-secondary ms-1"
+                  </button> */}
+                 
+                    <button
+                    className="btn btn-success ms-1"
                     onClick={() => {
                       setCart([...cart, p]);
                      
@@ -187,6 +200,11 @@ const Home = () => {
                   >
                     ADD TO CART
                   </button>
+
+                  
+                  
+                
+                 
                 </div>
               </div>
             ))}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Layout from '../components/reusablecomponents/Layout'
 import {
     MDBBtn,
@@ -15,12 +15,74 @@ import {
     } from "mdb-react-ui-kit";
 import { useCart } from '../context/Cart';
 import { useAuth } from '../context/auth';
-import { useNavigate } from 'react-router-dom';
+import { json, useNavigate } from 'react-router-dom';
+import DropIn from "braintree-web-drop-in-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+
+
+
+
 
 const CartPage = () => {
     const[cart,setCart]=useCart();
     const[auth,setAuth]=useAuth();
     const navigate=useNavigate();
+    const [clientToken, setClientToken] = useState("");
+    const [instance, setInstance] = useState("");
+    const [loading, setLoading] = useState(false);
+
+
+    const totalPrice=()=>{
+  const total=cart?.reduce((total,value)=>total+value.price,0)
+  return total
+
+}
+    const removeCartItem = (pid) => {
+      try {
+        let myCart = [...cart];
+        let index = myCart.findIndex((item) => item._id === pid);
+        myCart.splice(index, 1);
+        setCart(myCart);
+        localStorage.setItem("cart", JSON.stringify(myCart));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    //payment
+     //get payment gateway token
+  const getToken = async () => {
+    try {
+      const { data } = await axios.get("/api/v1/product/braintree/token");
+      setClientToken(data?.clientToken);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getToken();
+  }, [auth?.token]);
+
+  //handle payments
+  const handlePayment = async () => {
+    try {
+      setLoading(true);
+      const { nonce } = await instance.requestPaymentMethod();
+      const { data } = await axios.post("/api/v1/product/braintree/payment", {
+        nonce,
+        cart,
+      });
+      setLoading(false);
+      localStorage.removeItem("cart");
+      setCart([]);
+      navigate("/dashboard/user/orders");
+      toast.success("Payment Completed Successfully ");
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
 
  
 
@@ -44,32 +106,28 @@ const CartPage = () => {
         </div>
         <div className="row">
           <div className="col-md-8">
-            {cart?.map((item) => (
-                
-              <div className="row mb-2 p-3 card flex-row">
+            {cart?.map((p) => (
+              <div className="row mb-2 p-3 card flex-row" key={p._id}>
                 <div className="col-md-4">
                   <img
-                    src={`/api/v1/product/get-photo/${item._id}`}
+                    src={`/api/v1/product/product-photo/${p._id}`}
                     className="card-img-top"
-                    alt={item.name}
-                    width="20%"
-                    height={"80%"}
+                    alt={p.name}
+                    width="100px"
+                    height={"100px"}
                   />
                 </div>
                 <div className="col-md-8">
-                  <p>{item.name}</p>
-                  <p>{item.description.substring(0, 30)}</p>
-                  <p>Price : {item.price}</p>
+                  <p>{p.name}</p>
+                  <p>{p.description.substring(0, 30)}</p>
+                  <p>Price : {p.price}</p>
                   <button
-                    className="btn btn-success" onClick={()=>{setCart([...cart,item])}}                
-                    >
-                   Add Quantity
+                    className="btn btn-danger"
+                    onClick={() => removeCartItem(p._id)}
+                  >
+                    Remove
                   </button>
-                
-                
                 </div>
-               
-                
               </div>
             ))}
           </div>
@@ -77,15 +135,15 @@ const CartPage = () => {
             <h2>Cart Summary</h2>
             <p>Total | Checkout | Payment</p>
             <hr />
-            <h4>Total : </h4>
-            {auth?.user? (
+            <h4>Total : {totalPrice()} </h4>
+            {auth?.user?.address ? (
               <>
                 <div className="mb-3">
                   <h4>Current Address</h4>
-                  <h5>Address</h5>
+                  <h5>{auth?.user?.address}</h5>
                   <button
                     className="btn btn-outline-warning"
-                   
+                    onClick={() => navigate("/dashboard/user/profile")}
                   >
                     Update Address
                   </button>
@@ -96,20 +154,49 @@ const CartPage = () => {
                 {auth?.token ? (
                   <button
                     className="btn btn-outline-warning"
-                   
+                    onClick={() => navigate("/dashboard/user/profile")}
                   >
                     Update Address
                   </button>
                 ) : (
                   <button
                     className="btn btn-outline-warning"
-                   
+                    onClick={() =>
+                      navigate("/login", {
+                        state: "/cart",
+                      })
+                    }
                   >
                     Plase Login to checkout
                   </button>
                 )}
               </div>
             )}
+            <div className="mt-2">
+              {!clientToken || !cart?.length ? (
+                ""
+              ) : (
+                <>
+                  <DropIn
+                    options={{
+                      authorization: clientToken,
+                      paypal: {
+                        flow: "vault",
+                      },
+                    }}
+                    onInstance={(instance) => setInstance(instance)}
+                  />
+
+                  <button
+                    className="btn btn-primary"
+                    onClick={handlePayment}
+                    disabled={loading || !instance || !auth?.user?.address}
+                  >
+                    {loading ? "Processing ...." : "Make Payment"}
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
